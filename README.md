@@ -1,16 +1,22 @@
+[![make.fun · token-radar-01](https://make.fun/badge/token-radar-01.svg)](https://make.fun/bounty/token-radar-01?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
+[![rank](https://make.fun/badge/token-radar-01/ilufor228/token-radar-01/rank.svg)](https://make.fun/bounty/token-radar-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
+[![reward](https://make.fun/badge/token-radar-01/ilufor228/token-radar-01/reward.svg)](https://make.fun/bounty/token-radar-01?utm_source=github&utm_medium=readme&utm_campaign=token-radar-01)
+
 # Token launch radar
 
 Ranks the protocols in a sealed DefiLlama snapshot that record **no token**, by what a
 launch of each would plausibly be worth, and gives every one of them a farm plan.
 
-Built for make.fun's *Build the best token launch radar* bounty (`token-radar-01`).
+An entry for [make.fun's Build the best token launch radar bounty](https://make.fun/bounty/token-radar-01),
+in `ilufor228/token-radar-01`.
 
 ## What it does
 
 1. Reads `snapshot.json`: 758 protocols as of 2026-11-14, with a `watchlist` of 40.
 2. Keeps every protocol that has no token recorded (no symbol, no CoinGecko id), is not a
    wrapped, staked or bridged product, and either holds at least the snapshot's floor
-   ($50M TVL) or sits on the watchlist.
+   ($50M TVL) or sits on the watchlist. That is 108 protocols on this snapshot, all 40
+   watchlist rows among them.
 3. Scores each one 0-100 with model `radar-2` and turns the score into an implied value:
 
    | signal | weight | how it is read |
@@ -35,6 +41,7 @@ node scripts/gate-check.mjs
 
 `node main.ts` with no arguments reads `/input/snapshot.json` and writes `/output`, which
 is how the scorer runs it. Standard library only: no dependencies, no install step.
+`node scripts/shoot.mjs` re-renders the three screenshots in headless Chromium.
 
 ## The dashboard
 
@@ -67,3 +74,7 @@ protocol is early or already priced.
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+---
+
+Optional: [earn referral rewards](https://make.fun/r/g918srnc), a second way to make money.
