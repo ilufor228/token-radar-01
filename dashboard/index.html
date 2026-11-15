@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token launch radar: pre-token protocols by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="masthead">
+  <div>
+    <h1>Token launch radar</h1>
+    <p class="lede">Every protocol in the sealed DefiLlama snapshot that records no token, priced at what a launch would be worth. Model <span id="model">radar-2</span>, snapshot <span id="asof">-</span>.</p>
+  </div>
+  <dl class="tally">
+    <dt>rows</dt><dd id="tally-rows">0</dd>
+    <dt>watchlist</dt><dd id="tally-watch">0</dd>
+    <dt>top value</dt><dd id="tally-top">-</dd>
+  </dl>
+</header>
+
+<form class="controls" id="controls" autocomplete="off">
+  <label>Chain <select id="chain"><option value="">every chain</option></select></label>
+  <label>Category <select id="category"><option value="">every category</option></select></label>
+  <label class="check"><input type="checkbox" id="watchlist"> watchlist only</label>
+  <label>Floor <select id="floor">
+    <option value="0">any TVL</option>
+    <option value="5">$5M and up</option>
+    <option value="50">$50M and up</option>
+    <option value="500">$500M and up</option>
+  </select></label>
+  <label>Search <input type="search" id="q" placeholder="protocol name"></label>
+  <button type="reset" id="reset">clear</button>
+</form>
+
+<p class="status" id="status">loading the board</p>
+
+<main>
+  <table id="board">
+    <caption>Sorted by implied value. Click a column to sort, click a row for the farm plan.</caption>
+    <thead>
+      <tr>
+        <th scope="col" data-sort="rank" class="num">#</th>
+        <th scope="col" data-sort="name">Protocol</th>
+        <th scope="col" data-sort="category">Category</th>
+        <th scope="col" data-sort="tvl_usd" class="num">TVL</th>
+        <th scope="col" data-sort="change_7d" class="num">7d</th>
+        <th scope="col" data-sort="age_days" class="num">Age</th>
+        <th scope="col" data-sort="chains" class="num">Chains</th>
+        <th scope="col" data-sort="score" class="num">Score</th>
+        <th scope="col" data-sort="implied_value_usd" class="num">Implied value</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</main>
+
+<aside id="drawer" hidden aria-live="polite">
+  <button id="close" type="button">close</button>
+  <div id="detail"></div>
+</aside>
+
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
