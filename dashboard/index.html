@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar: pre-token protocols priced against their own record</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<a class="skip" href="#board">Skip to the board</a>
+
+<header class="masthead">
+  <div class="masthead-lead">
+    <p class="eyebrow">DefiLlama snapshot &middot; <span id="as-of">&mdash;</span></p>
+    <h1>Token&nbsp;Radar</h1>
+    <p class="standfirst">Every protocol in the sealed snapshot that <em>records no token</em>, priced by its own record: TVL, the week's direction, how long it has run with nothing to trade, and how far its chains reach.</p>
+  </div>
+  <dl class="masthead-facts">
+    <div><dt>Model</dt><dd id="model-version">&mdash;</dd></div>
+    <div><dt>Watchlist</dt><dd id="watchlist-covered">&mdash;</dd></div>
+    <div><dt>Floor</dt><dd id="floor">&mdash;</dd></div>
+  </dl>
+</header>
+
+<section class="figures" aria-label="Board at a glance">
+  <article class="figure">
+    <p class="figure-label">Protocols scanned</p>
+    <p class="figure-value" id="fig-scanned">&mdash;</p>
+    <p class="figure-note">all of the snapshot, token or not</p>
+  </article>
+  <article class="figure">
+    <p class="figure-label">Ranked, no token</p>
+    <p class="figure-value" id="fig-ranked">&mdash;</p>
+    <p class="figure-note">the radar's whole universe</p>
+  </article>
+  <article class="figure">
+    <p class="figure-label">Rank 1 implied value</p>
+    <p class="figure-value accent" id="fig-top">&mdash;</p>
+    <p class="figure-note" id="fig-top-name">&mdash;</p>
+  </article>
+  <article class="figure">
+    <p class="figure-label">Median multiple</p>
+    <p class="figure-value" id="fig-multiple">&mdash;</p>
+    <p class="figure-note" id="fig-comparable">&mdash;</p>
+  </article>
+</section>
+
+<section class="controls" aria-label="Filter and sort the board">
+  <label class="field grow">
+    <span>Search</span>
+    <input id="q" type="search" placeholder="protocol, slug, chain or category" autocomplete="off" spellcheck="false">
+  </label>
+  <label class="field">
+    <span>Category</span>
+    <select id="category"><option value="">All categories</option></select>
+  </label>
+  <label class="field">
+    <span>Chain</span>
+    <select id="chain"><option value="">All chains</option></select>
+  </label>
+  <div class="field toggles">
+    <span>Show</span>
+    <button type="button" id="toggle-watchlist" class="toggle" aria-pressed="false">Watchlist only</button>
+    <button type="button" id="toggle-gainers" class="toggle" aria-pressed="false">7d gainers</button>
+  </div>
+  <button type="button" id="reset" class="ghost">Reset</button>
+  <p class="count" id="count" aria-live="polite">&mdash;</p>
+</section>
+
+<main id="board" class="board" tabindex="-1">
+  <table class="grid">
+    <caption class="visually-hidden">Pre-token protocols ranked by implied value. Sort by any column, or open a protocol for its model breakdown and farm plan.</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="num" aria-sort="ascending"><button type="button" data-sort="rank">#</button></th>
+        <th scope="col" class="left"><button type="button" data-sort="name">Protocol</button></th>
+        <th scope="col" class="num"><button type="button" data-sort="implied">Implied value</button></th>
+        <th scope="col" class="num"><button type="button" data-sort="multiple">&times; TVL</button></th>
+        <th scope="col" class="num"><button type="button" data-sort="tvl">TVL</button></th>
+        <th scope="col" class="num"><button type="button" data-sort="change">7d</button></th>
+        <th scope="col" class="num"><button type="button" data-sort="age">Age</button></th>
+        <th scope="col" class="left"><button type="button" data-sort="chains">Chains</button></th>
+        <th scope="col" class="left"><span class="plain">Farm</span></th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <p class="empty" id="empty" hidden>No protocol matches those filters.</p>
+</main>
+
+<div class="drawer" id="drawer" aria-hidden="true" aria-labelledby="drawer-title" role="dialog" aria-modal="false">
+  <div class="drawer-inner">
+    <button type="button" class="drawer-close" id="drawer-close" aria-label="Close the protocol view">&times;</button>
+    <div id="drawer-body"></div>
+  </div>
+</div>
+<div class="scrim" id="scrim" hidden></div>
+
+<details class="panel" id="model-panel">
+  <summary>The model: how an implied value is made, and what happens if you move it</summary>
+  <div class="panel-body">
+    <div class="panel-text">
+      <p>Each protocol's record gives four signals, each scored 0 to 1. Their weighted sum is a radar score out of 100. The score sets a multiple of TVL inside a fixed band, and the implied value is that multiple times the protocol's own TVL.</p>
+      <pre class="formula">score    = 52&middot;scale + 22&middot;momentum + 18&middot;tenure + 8&middot;breadth
+scale    = log10(tvl / $1M) / log10(3000)         clipped to 0..1
+momentum = (clamp(change_7d, -60, +120) + 60) / 180
+tenure   = days since DefiLlama first saw it / 1825, clipped to 0..1
+breadth  = (chains - 1) / 4, clipped to 0..1
+
+multiple = 0.08 &middot; e^(2.9 &middot; score / 100)       about 0.08x to 1.45x TVL
+implied  = round(tvl_usd &middot; multiple)</pre>
+      <p class="fine">A record with no seven-day reading scores 0.5 on momentum; one with no start date scores 130 days of tenure; one naming no chain scores 0. The band is checked against the market in the next column: protocols in this same snapshot that <em>do</em> trade sit at a median market-cap-to-TVL of <span id="panel-comparable">&mdash;</span>.</p>
+    </div>
+    <div class="sliders" id="sliders">
+      <label>Scale <input type="range" min="0" max="80" step="1" value="52" data-weight="scale"><output>52</output></label>
+      <label>Momentum <input type="range" min="0" max="80" step="1" value="22" data-weight="momentum"><output>22</output></label>
+      <label>Tenure <input type="range" min="0" max="80" step="1" value="18" data-weight="tenure"><output>18</output></label>
+      <label>Breadth <input type="range" min="0" max="80" step="1" value="8" data-weight="breadth"><output>8</output></label>
+      <button type="button" class="ghost" id="weights-reset">Restore radar-3</button>
+      <p class="fine" id="weights-note">Moving a weight re-ranks the board in the page. board.json stays the model above; this is what-if only.</p>
+    </div>
+  </div>
+</details>
+
+<footer class="colophon">
+  <p>Snapshot: <span id="source">&mdash;</span>. Implied value is this board's own claim about what a token would be worth if the record stood as it is; it is not a forecast that one is issued, and a protocol that records no token may hold one DefiLlama does not carry. Nothing here is investment advice.</p>
+</footer>
+
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
