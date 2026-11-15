@@ -100,23 +100,22 @@
   <summary>The model: how an implied value is made, and what happens if you move it</summary>
   <div class="panel-body">
     <div class="panel-text">
-      <p>Each protocol's record gives four signals, each scored 0 to 1. Their weighted sum is a radar score out of 100. The score sets a multiple of TVL inside a fixed band, and the implied value is that multiple times the protocol's own TVL.</p>
-      <pre class="formula">score    = 52&middot;scale + 22&middot;momentum + 18&middot;tenure + 8&middot;breadth
+      <p>Each protocol's record gives four signals, each scored 0 to 1. Their weighted sum is a radar score out of 100. The score sets an implied value using an exponential scale.</p>
+      <pre class="formula">score    = 55&middot;scale + 25&middot;momentum + 15&middot;tenure + 5&middot;breadth
 scale    = log10(tvl / $1M) / log10(3000)         clipped to 0..1
 momentum = (clamp(change_7d, -60, +120) + 60) / 180
 tenure   = days since DefiLlama first saw it / 1825, clipped to 0..1
 breadth  = (chains - 1) / 4, clipped to 0..1
 
-multiple = 0.08 &middot; e^(2.9 &middot; score / 100)       about 0.08x to 1.45x TVL
-implied  = round(tvl_usd &middot; multiple)</pre>
-      <p class="fine">A record with no seven-day reading scores 0.5 on momentum; one with no start date scores 130 days of tenure; one naming no chain scores 0. The band is checked against the market in the next column: protocols in this same snapshot that <em>do</em> trade sit at a median market-cap-to-TVL of <span id="panel-comparable">&mdash;</span>.</p>
+implied  = round($500,000 &middot; 10^(score &middot; 0.024))</pre>
+      <p class="fine">A record with no seven-day reading scores 0.5 on momentum; one with no start date scores 130 days of tenure; one naming no chain scores 0. Protocols in this same snapshot that <em>do</em> trade sit at a median market-cap-to-TVL of <span id="panel-comparable">&mdash;</span>.</p>
     </div>
     <div class="sliders" id="sliders">
-      <label>Scale <input type="range" min="0" max="80" step="1" value="52" data-weight="scale"><output>52</output></label>
-      <label>Momentum <input type="range" min="0" max="80" step="1" value="22" data-weight="momentum"><output>22</output></label>
-      <label>Tenure <input type="range" min="0" max="80" step="1" value="18" data-weight="tenure"><output>18</output></label>
-      <label>Breadth <input type="range" min="0" max="80" step="1" value="8" data-weight="breadth"><output>8</output></label>
-      <button type="button" class="ghost" id="weights-reset">Restore radar-3</button>
+      <label>Scale <input type="range" min="0" max="80" step="1" value="55" data-weight="scale"><output>55</output></label>
+      <label>Momentum <input type="range" min="0" max="80" step="1" value="25" data-weight="momentum"><output>25</output></label>
+      <label>Tenure <input type="range" min="0" max="80" step="1" value="15" data-weight="tenure"><output>15</output></label>
+      <label>Breadth <input type="range" min="0" max="80" step="1" value="5" data-weight="breadth"><output>5</output></label>
+      <button type="button" class="ghost" id="weights-reset">Restore radar-2</button>
       <p class="fine" id="weights-note">Moving a weight re-ranks the board in the page. board.json stays the model above; this is what-if only.</p>
     </div>
   </div>
